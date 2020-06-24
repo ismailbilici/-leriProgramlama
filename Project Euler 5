@@ -1,0 +1,8 @@
+def solve():
+    """ Compute the answer to Project Euler's problem #48 """
+    target = 1000
+    modulus = 10 ** 10  # will leave the least significant 10 digits
+    terms = (pow(i, i, modulus) for i in range(1, target + 1))
+    answer = sum(terms) % modulus
+    return answer
+expected_answer = 9110846700
