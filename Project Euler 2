@@ -1,0 +1,48 @@
+from typing import List
+def max_path_sum(triangle: List[List[int]]) -> int:
+    """ Compute the maximum path sum through the triangle
+    A path moves from the triangle root to a leaf node, with one entry from each row. As the path moves from one row to
+    the next, it may connect to adjacent entries only.
+    :param triangle: :math:`2`-dimensional list of integers (the triangle)
+    :return: the maximum path sum through `triangle`
+    """
+    # Perform some simple validation on triangle
+    assert isinstance(triangle, list), "triangle must be a triangular 2-dimensional list of integers"
+    for i, row in enumerate(triangle):
+        assert len(row) == i + 1, "row {} has length {}, it should have {} to be triangular".format(i, len(row), i + 1)
+        for elt in row:
+            assert isinstance(elt, int), "triangle entries must be integers"
+
+    # Build up the answer one row at a time using a dynamic programming algorithm
+    n = len(triangle)
+    partial_sum_to = [0] * n
+    for i in range(n):
+        # After each iteration i, part_sum_to[j] is the maximum path sum ending at triangle[i][j]
+        temp_partial_sum = partial_sum_to.copy()  # keep an unmodified version of partial_sum from last iteration
+        temp_partial_sum[0] = partial_sum_to[0] + triangle[i][0]  # only one possible path ends at triangle[i][0]
+        for j in range(1, i):
+            temp_partial_sum[j] = max(partial_sum_to[j - 1], partial_sum_to[j]) + triangle[i][j]
+        temp_partial_sum[i] = partial_sum_to[i - 1] + triangle[i][i]  # only one possible path ends at triangle[i][i]
+        partial_sum_to = temp_partial_sum
+    return max(partial_sum_to)  # find the maximum path sum ending at one of the leaf nodes
+def solve():
+    """ Compute the answer to Project Euler's problem #18 """
+    triangle = [
+                                    [75],
+                                  [95, 64],
+                                [17, 47, 82],
+                              [18, 35, 87, 10],
+                            [20,  4, 82, 47, 65],
+                          [19,  1, 23, 75,  3, 34],
+                        [88,  2, 77, 73,  7, 63, 67],
+                      [99, 65,  4, 28,  6, 16, 70, 92],
+                    [41, 41, 26, 56, 83, 40, 80, 70, 33],
+                  [41, 48, 72, 33, 47, 32, 37, 16, 94, 29],
+                [53, 71, 44, 65, 25, 43, 91, 52, 97, 51, 14],
+              [70, 11, 33, 28, 77, 73, 17, 78, 39, 68, 17, 57],
+            [91, 71, 52, 38, 17, 14, 91, 43, 58, 50, 27, 29, 48],
+          [63, 66,  4, 68, 89, 53, 67, 30, 73, 16, 69, 87, 40, 31],
+        [ 4, 62, 98, 27, 23,  9, 70, 98, 73, 93, 38, 53, 60,  4, 23]
+    ]
+    return max_path_sum(triangle)
+expected_answer = 1074
