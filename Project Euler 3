@@ -1,0 +1,49 @@
+from typing import List, Optional, Tuple
+from lib.numbertheory import is_odd
+def complete_line_segment(matrix: List[List[Optional[int]]], x: int, y: int, counter: int, direction: str,
+                          distance: int) -> Tuple[int, int, int]:
+    """ Fill in adjacent cells in `matrix`, starting at position :math:`(x,y)`, moving in the specified `direction` for
+    the specified `distance`
+    .. note:: the initial value of `counter` is used to start, it is incremented at each step.
+    :param matrix: the grid to be populated with `counter` in a spiral pattern
+    :param x: the starting :math:`x` co-ordinate
+    :param y: the staring :math:`y` co-ordinate
+    :param counter: the current value of the counter to use when setting cell values
+    :param direction: the direction to move in (``"R"``, ``"D"``, ``"L"`` or ``"U"``)
+    :param distance: the distance to move in the given direction
+    :return: the new :math:`(x,y)` position and the final value of `counter`
+    """
+    step_coords = {"R": lambda _x, _y: (_x + 1, _y), "D": lambda _x, _y: (_x, _y + 1),
+                   "L": lambda _x, _y: (_x - 1, _y), "U": lambda _x, _y: (_x, _y - 1)}
+    for i in range(distance):
+        matrix[y][x] = counter  # mark the (x,y) cell in matrix with counter
+        x, y = step_coords[direction](x, y)  # advance (x,y) co-ordinates in the specified direction
+        counter += 1  # get next counter value
+    return x, y, counter
+def solve():
+    """ Compute the answer to Project Euler's problem #28 """
+    dimension = 1001
+    assert is_odd(dimension), "this algorithm is only correct for an odd-valued dimension"
+    # Initialise the matrix with None values everywhere, start a position (x,y) at the centre
+    matrix = [[None for _ in range(dimension)] for _ in range(dimension)]
+    x, y = dimension // 2, dimension // 2
+    # Iteratively fill in matrix values in a clockwise direction
+    counter = 1
+    distance = 1
+    for i in range(dimension // 2):
+        x, y, counter = complete_line_segment(matrix, x, y, counter, "R", distance)
+        x, y, counter = complete_line_segment(matrix, x, y, counter, "D", distance)
+        distance += 1
+        x, y, counter = complete_line_segment(matrix, x, y, counter, "L", distance)
+        x, y, counter = complete_line_segment(matrix, x, y, counter, "U", distance)
+        distance += 1
+    # Complete the top row of the matrix
+    complete_line_segment(matrix, x, y, counter, "R", distance)
+    # Sum the values along both diagonals
+    answer = 0
+    for z in range(dimension):
+        answer += matrix[z][z]  # top left to bottom right
+        answer += matrix[dimension - 1 - z][z]  # bottom left to top right
+    answer -= 1  # we double-counted the centre cell which has a value of 1, remove one copy
+    return answer
+expected_answer = 669171001
