@@ -1,0 +1,11 @@
+   series = series.replace(" ", "").replace("\n", "")
+    integers = [int(character) for character in series]
+    n = len(integers)
+    m = 13
+    answer = 0
+    for i in range(n - m + 1):
+        subset = integers[i:i+m]
+        product = reduce(mul, subset, 1)
+        answer = max(answer, product)
+    return answer
+expected_answer = 23514624000
